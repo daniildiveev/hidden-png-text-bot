@@ -46,6 +46,7 @@ def decode_image(message):
 
     if image_ok:
         result = retrieve_message_from_png(image_path)
+        print(result)
 
         if isinstance(result, int):
             bot.send_message(message.chat.id, "There are no secret messages in this image")
@@ -59,10 +60,13 @@ def decode_image(message):
         bot.send_message(message.chat.id, "Seems like you haven't uploaded any images yet")
 
 
-@bot.message_handler(content_types='photo')
+@bot.message_handler(content_types=['photo', 'document'])
 def get_image(message):
     global image_ok, image_path
-    fileID = message.photo[-1].file_id
+    if message.content_type == 'document':
+        fileID = message.document.file_id
+    else:
+        fileID = message.photo[-1].file_id
     file_info = bot.get_file(fileID)
     downloaded_file = bot.download_file(file_info.file_path)
 
